@@ -1,13 +1,71 @@
 <?php
-
-class mangaDownloader_ms
+class mangaDownloader_ax
 {	
 	/**
-	 * MANGASTREAM VERSION
-	 * Le pasas una URL con la siguiente forma: http://submanga.com/Naruto/536/107463 es necesario el ultimo numero despues del capitulo 107463
-	 * La clase descarga el capitulo automáticamente en la carpeta mangas/Naruto536
+	 * ANIMEXTREMIST VERSION
+	 * Le pasas una URL con la siguiente forma: http://www.animextremist.com/mangas-online/air/capitulo-1/airtv1.html
+	 * La clase descarga el capitulo automáticamente en la carpeta mangas/air-capitulo-1
 	 * @param string $manga_url
 	 */
+	function download($manga_url)
+	{
+		$html = file_get_contents($manga_url);
+	    
+	    /* a new dom object*/
+	    $dom = new domDocument;
+	    /* load the html into the object*/
+	    @$dom->loadHTML($html);
+	
+	    /* discard white space*/
+	    $dom->preserveWhiteSpace = false;
+	    
+		/* PRIMERO SACAMOS LA SERIE Y EL NUMERO DE CAPITULO */
+		
+	 	echo $serie = urlParameters(4, $manga_url);
+    	echo $capi = urlParameters(5, $manga_url);
+		
+		/* LUEGO GUARDAMOS LA URL DE LA PRIMERA IMAGEN
+		 *  */
+	    
+	    $links = $dom->getElementsByTagName('img');
+	    echo $serie;
+	    $i = 0;
+		foreach ($links as $link)
+		{
+	    	if ($i == 0) 
+	    	{
+	    		//guardamos la url de la imagen
+			    $imageurl = $link->getAttribute('src');
+	    		break;
+	    	}
+			$i++;
+		}
+		//reformateamos la string pa tener la plantilla
+		$rest = substr($imageurl, 0, -4);  // devuelve "abcde"
+		echo $rest;
+		/* AQUI YA TENEMOS LA URL DONDE ESTAN LAS IMAGENES: http://img2.submanga.com/pages/107/1074632bf/ 
+		 * EMPEZAMOS UN BUCLE QUE GUARDE LAS IMAGENES HASTA QUE DE ERROR  */  
+		
+		//OWNED :)
+		
+		$error = 0;
+		for($i=0;$error == 0;$i++)
+		{
+			if ($i==0) 
+			{
+				$url = "http://www.animextremist.com/mangas-online/".$serie."/".$capi."/".$rest.".jpg";
+				if (saveImg($url, $i.".jpg", $serie."-".$capi) == 0) $error = 1;
+				set_time_limit(20);
+			}
+			else 
+			{
+				$url = "http://www.animextremist.com/mangas-online/".$serie."/".$capi."/".$rest.$i.".jpg";
+				if (saveImg($url, $i.".jpg", $serie."-".$capi) == 0) $error = 1;
+				set_time_limit(20);
+			}
+			
+		}
+	}
 }
 
 class mangaDownloader_sm
@@ -118,6 +176,8 @@ class mangaDownloader_sm
 		/* AQUI YA TENEMOS LA URL DONDE ESTAN LAS IMAGENES: http://img2.submanga.com/pages/107/1074632bf/ 
 		 * EMPEZAMOS UN BUCLE QUE GUARDE LAS IMAGENES HASTA QUE DE ERROR    */
 		
+		//OWNED :)
+		
 		$error = 0;
 		for($i=1;$error == 0;$i++)
 		{
@@ -138,6 +198,8 @@ class mangaDownloader_sm
  */
 function saveImg($imageurl, $name, $loc)
 {
+	if (!file_exists("mangas")) mkdir("mangas");
+	
 	if (!file_exists("mangas/$loc")) mkdir("mangas/$loc");
 		
 	$image = @file_get_contents($imageurl);
