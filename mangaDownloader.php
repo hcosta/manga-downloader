@@ -21,14 +21,13 @@ class mangaDownloader_ax
 	    
 		/* PRIMERO SACAMOS LA SERIE Y EL NUMERO DE CAPITULO */
 		
-	 	echo $serie = urlParameters(4, $manga_url);
-    	echo $capi = urlParameters(5, $manga_url);
+	 	$serie = urlParameters(4, $manga_url);
+    	$capi = urlParameters(5, $manga_url);
 		
 		/* LUEGO GUARDAMOS LA URL DE LA PRIMERA IMAGEN
 		 *  */
 	    
 	    $links = $dom->getElementsByTagName('img');
-	    echo $serie;
 	    $i = 0;
 		foreach ($links as $link)
 		{
@@ -41,8 +40,7 @@ class mangaDownloader_ax
 			$i++;
 		}
 		//reformateamos la string pa tener la plantilla
-		$rest = substr($imageurl, 0, -4);  // devuelve "abcde"
-		echo $rest;
+		$rest = substr($imageurl, 0, -4);
 		/* AQUI YA TENEMOS LA URL DONDE ESTAN LAS IMAGENES: http://img2.submanga.com/pages/107/1074632bf/ 
 		 * EMPEZAMOS UN BUCLE QUE GUARDE LAS IMAGENES HASTA QUE DE ERROR  */  
 		
@@ -122,7 +120,7 @@ class mangaDownloader_sm
 	/**
 	 * 
 	 * Le pasas una URL con la siguiente forma: http://submanga.com/Naruto
-	 * la clase descarga el ultimo capitulo automáticamente
+	 * la clase descarga el ultimo capitulo automaticamente
 	 * @param string $manga_url
 	 */
 	
