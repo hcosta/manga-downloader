@@ -10,17 +10,17 @@ ANIMEXTREMIST
 $obj = new mangaDownloader_ax();
 
 	//descarga un capitulo
-$obj->download("http://www.animextremist.com/mangas-online/naruto/capitulo-504/naruto.html");
+$obj->download('http://www.animextremist.com/mangas-online/naruto/capitulo-504/naruto.html');
 
 SUBMANGA
 
 $obj = new mangaDownloader_sm();
 
 	//descarga el ultimo capitulo publicado
-$obj->last("http://submanga.com/Naruto");
+$obj->last('http://submanga.com/Naruto');
  
 	//descarga un capitulo
-$obj->download("http://submanga.com/Naruto/2");
+$obj->download('http://submanga.com/Naruto/2');
 
 BUGS
 
