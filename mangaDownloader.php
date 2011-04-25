@@ -4,7 +4,7 @@ class mangaDownloader_ax
 	/**
 	 * ANIMEXTREMIST VERSION
 	 * Le pasas una URL con la siguiente forma: http://www.animextremist.com/mangas-online/air/capitulo-1/airtv1.html
-	 * La clase descarga el capitulo automáticamente en la carpeta mangas/air-capitulo-1
+	 * La clase descarga el capitulo automaticamente en la carpeta mangas/air-capitulo-1
 	 * @param string $manga_url
 	 */
 	function download($manga_url)
@@ -73,7 +73,7 @@ class mangaDownloader_sm
 	/**
 	 * SUBMANGAVERSION
 	 * Le pasas una URL con la siguiente forma: http://submanga.com/Naruto/536/107463 es necesario el ultimo numero despues del capitulo 107463
-	 * La clase descarga el capitulo automáticamente en la carpeta mangas/Naruto536
+	 * La clase descarga el capitulo automaticamente en la carpeta mangas/Naruto536
 	 * @param string $manga_url
 	 */
 	function download($manga_url)
@@ -122,7 +122,7 @@ class mangaDownloader_sm
 	/**
 	 * 
 	 * Le pasas una URL con la siguiente forma: http://submanga.com/Naruto
-	 * la clase descarga el último capitulo automáticamente
+	 * la clase descarga el ultimo capitulo automáticamente
 	 * @param string $manga_url
 	 */
 	

@@ -1,7 +1,7 @@
 <?php
 include 'mangaDownloader.php';
 
-//catálogo http://www.animextremist.com/mangas.htm XD
+//catalogo http://www.animextremist.com/mangas.htm XD
 
 $obj = new mangaDownloader_ax();
 $obj->download("http://www.animextremist.com/mangas-online/air/capitulo-2/airtv.html");
