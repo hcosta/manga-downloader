@@ -1,6 +1,32 @@
+ULTIMOS CAMBIOS
+
 Ya no hay que CREAR EL DIRECTORIO 'mangas' en la raiz para que funcione.
 Soporte para Submanga y Animextremist... a disfrutar!
 
-Bugs: Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes,
+GUIA DE USO
 
-Proximamente: envio de correos con fichero adjunto... seeeeeeeeeee
+ANIMEXTREMIST
+
+$obj = new mangaDownloader_ax();
+
+	//descarga un capitulo
+$obj->download("http://www.animextremist.com/mangas-online/naruto/capitulo-504/naruto.html");
+
+SUBMANGA
+
+$obj = new mangaDownloader_sm();
+
+	//descarga el ultimo capitulo publicado
+$obj->last("http://submanga.com/Naruto");
+ 
+	//descarga un capitulo
+$obj->download("http://submanga.com/Naruto/2");
+
+BUGS
+
+Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes.
+
+
+PROXIMAMENTE
+
+Envio de correos con fichero adjunto... seeeeeeeeeee

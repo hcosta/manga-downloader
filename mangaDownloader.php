@@ -85,24 +85,8 @@ class mangaDownloader_ax
 		echo $file;
 		
 		//enviaremos la carpeta a los usuarios de la lista
-		foreach ($list as $user)
-			echo $user."<br>";
-		  //correo($file, $user);
-	}
-	
-	/**
-	 * Borra ficheros en el servidor
-	 * @param String $file
-	 * @param Boolean $dir
-	 */
-	function delete($file, $dir)
-	{
-		//borraremos el zip
-	
-		if ($dir) 
-		{
-			//tambien borraremos la carpeta con las imagenes
-		}
+		
+		correo($file, $list);
 	}
 	
 }
@@ -122,9 +106,29 @@ class mangaDownloader_sm
 		
     	$serie = urlParameters(3, $manga_url);
     	$capi = urlParameters(4, $manga_url);
-		$url_mod = "http://submanga.com/c/".urlParameters(5, $manga_url);
 		
 		/* HASTA AQUI SE CONSIGUE LA URL DEL ULTIMO CAPITULO: http://submanga.com/c/107463 */
+		$html = file_get_contents($manga_url);
+	    
+	    /* a new dom object*/
+	    $dom = new domDocument;
+	    /* load the html into the object*/
+	    @$dom->loadHTML($html);
+	
+	    /* discard white space*/
+	    $dom->preserveWhiteSpace = false;
+	    
+		/*Intentamos conseguir el id de la carpeta */
+	    $inputs = $dom->getElementsByTagName('input');
+		foreach($inputs as $element)
+		{
+			if ($element->getAttribute('name') == "id")
+		   		$finalurl = $element->getAttribute('value');
+		}
+
+		/* HASTA AQUI SE CONSIGUE LA URL CON ID DEL CAPITULO: http://submanga.com/c/107463 */
+		$url_mod = "http://submanga.com/c/".$finalurl;
+		
 		$html = file_get_contents($url_mod);
 	    
 	    /* a new dom object*/
@@ -134,7 +138,8 @@ class mangaDownloader_sm
 	
 	    /* discard white space*/
 	    $dom->preserveWhiteSpace = false;
-	
+		
+		/*Luego sacamos el primer link... */   
 	    $links = $dom->getElementsByTagName('img');
 	    $i = 0;
 		foreach ($links as $link)
@@ -148,7 +153,7 @@ class mangaDownloader_sm
 			$i++;
 		}
 		/* AQUI YA TENEMOS LA URL DONDE ESTAN LAS IMAGENES: http://img2.submanga.com/pages/107/1074632bf/ 
-		 * EMPEZAMOS UN BUCLE QUE GUARDE LAS IMAGENES HASTA QUE DE ERROR    */
+		 * EMPEZAMOS UN BUCLE QUE GUARDE LAS IMAGENES HASTA QUE DE ERROR   */
 		
 		$error = 0;
 		for($i=1;$error == 0;$i++)
