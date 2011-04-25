@@ -306,7 +306,7 @@ function correo($file, $user)
 	Content-Type: text/plain; charset='iso-8859-1'
 	Content-Transfer-Encoding: 7bit
 	
-	Nuestro correo en versión de texto plano
+	Nuestro correo en version de texto plano
 	
 	--PHP-alt-$semilla
 	Content-Type: text/html; charset='iso-8859-1'
