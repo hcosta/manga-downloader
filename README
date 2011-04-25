@@ -1,2 +1,6 @@
 Ya no hay que CREAR EL DIRECTORIO 'mangas' en la raiz para que funcione.
 Soporte para Submanga y Animextremist... a disfrutar!
+
+Bugs: Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes,
+
+Proximamente: envio de correos con fichero adjunto... seeeeeeeeeee

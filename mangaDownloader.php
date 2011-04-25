@@ -7,6 +7,7 @@ class mangaDownloader_ax
 	 * La clase descarga el capitulo automaticamente en la carpeta mangas/air-capitulo-1
 	 * @param string $manga_url
 	 */
+	
 	function download($manga_url)
 	{
 		$html = file_get_contents($manga_url);
@@ -21,11 +22,12 @@ class mangaDownloader_ax
 	    
 		/* PRIMERO SACAMOS LA SERIE Y EL NUMERO DE CAPITULO */
 		
+	    $str1 = urlParameters(2, $manga_url);
+    	$str2 = urlParameters(3, $manga_url);
 	 	$serie = urlParameters(4, $manga_url);
     	$capi = urlParameters(5, $manga_url);
 		
-		/* LUEGO GUARDAMOS LA URL DE LA PRIMERA IMAGEN
-		 *  */
+		/* LUEGO GUARDAMOS LA URL DE LA PRIMERA IMAGEN */
 	    
 	    $links = $dom->getElementsByTagName('img');
 	    $i = 0;
@@ -40,7 +42,10 @@ class mangaDownloader_ax
 			$i++;
 		}
 		//reformateamos la string pa tener la plantilla
-		$rest = substr($imageurl, 0, -4);
+		
+		$str1 = urlParameters(2, $imageurl);
+    	$str2 = urlParameters(3, $imageurl);
+		$rest = substr(urlParameters(6, $imageurl), 0, -4);
 		/* AQUI YA TENEMOS LA URL DONDE ESTAN LAS IMAGENES: http://img2.submanga.com/pages/107/1074632bf/ 
 		 * EMPEZAMOS UN BUCLE QUE GUARDE LAS IMAGENES HASTA QUE DE ERROR  */  
 		
@@ -51,19 +56,55 @@ class mangaDownloader_ax
 		{
 			if ($i==0) 
 			{
-				$url = "http://www.animextremist.com/mangas-online/".$serie."/".$capi."/".$rest.".jpg";
+				$url = "http://".$str1."/".$str2."/".$serie."/".$capi."/".$rest.".jpg";
+				echo $url."<br>";
 				if (saveImg($url, $i.".jpg", $serie."-".$capi) == 0) $error = 1;
 				set_time_limit(20);
 			}
 			else 
 			{
-				$url = "http://www.animextremist.com/mangas-online/".$serie."/".$capi."/".$rest.$i.".jpg";
+				$url = "http://".$str1."/".$str2."/".$serie."/".$capi."/".$rest.$i.".jpg";
 				if (saveImg($url, $i.".jpg", $serie."-".$capi) == 0) $error = 1;
 				set_time_limit(20);
 			}
 			
 		}
 	}
+	
+	/**
+	 * Envia un manga en compreso en Zip a la lista de usuarios proporcionada
+	 * @param String $file
+	 * @param Array String $list
+	 */
+	
+	function enviarManga($file, $list)
+	{
+		$file = "mangas/$file";
+		//comprimiremos la carpeta de un
+		
+		echo $file;
+		
+		//enviaremos la carpeta a los usuarios de la lista
+		foreach ($list as $user)
+			echo $user."<br>";
+		  //correo($file, $user);
+	}
+	
+	/**
+	 * Borra ficheros en el servidor
+	 * @param String $file
+	 * @param Boolean $dir
+	 */
+	function delete($file, $dir)
+	{
+		//borraremos el zip
+	
+		if ($dir) 
+		{
+			//tambien borraremos la carpeta con las imagenes
+		}
+	}
+	
 }
 
 class mangaDownloader_sm
@@ -74,6 +115,7 @@ class mangaDownloader_sm
 	 * La clase descarga el capitulo automaticamente en la carpeta mangas/Naruto536
 	 * @param string $manga_url
 	 */
+	
 	function download($manga_url)
 	{
 		/* parametizamos la url y sacamos todos los datos necesarios */
@@ -118,7 +160,6 @@ class mangaDownloader_sm
 	}
 	
 	/**
-	 * 
 	 * Le pasas una URL con la siguiente forma: http://submanga.com/Naruto
 	 * la clase descarga el ultimo capitulo automaticamente
 	 * @param string $manga_url
@@ -183,24 +224,27 @@ class mangaDownloader_sm
 			if (saveImg($url, $i.".jpg", $serie.$capi) == 0) $error = 1;
 			set_time_limit(20);
 		}
+		
+		return $serie.$capi;
 	}
 }
 
 
 /**
- * 
  * Guarda una imagen. Le pasas url, nombre y directorio. Devuelve false si no lo consigue o true
  * @param $string $imageurl
  * @param $string $name
  * @param $string $loc
  */
+
 function saveImg($imageurl, $name, $loc)
-{
+{	
 	if (!file_exists("mangas")) mkdir("mangas");
 	
 	if (!file_exists("mangas/$loc")) mkdir("mangas/$loc");
 		
 	$image = @file_get_contents($imageurl);
+	
 	if ($image)
 	{
 		if (!file_exists("mangas/$loc/$name"))
@@ -217,7 +261,7 @@ function saveImg($imageurl, $name, $loc)
 		else 
 		{
 			echo $loc." ".$name." ya existe!<br>";
-			return 1;
+			return 0;
 		}
 	}
 	else 
@@ -228,15 +272,58 @@ function saveImg($imageurl, $name, $loc)
 }
 
 /**
- * 
  * Parametiza una url
  * @param $string $segment
  * @param $string $web
  */
+
 function urlParameters($segment, $web)
 {
 	 $navString = $web; // Agafa la URL
 	 $parts = explode('/', $navString); // La parteix per "/"
 	 return $parts[$segment];
+}
+
+/**
+ * Envia un correo con archivo adjunto
+ * @param String $file
+ * @param String $user
+ */
+
+function correo($file, $user)
+{
+	/*
+	$semilla = md5(date('r', time()));
+	$para = $user;
+	$asunto = "Toma manga $file";
+	$headers = "From:robot-de-esos-que-mandan-cosas-lol@robot.com\r\nReply-To: robot-de-esos-que-mandan-cosas-lol@robot.com";
+	$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$semilla."\"";
+	$adjunto= chunk_split(base64_encode(file_get_contents($file)));
+	$correo = "
+	--PHP-mixed-$semilla;
+	Content-Type: multipart/alternative; boundary='PHP-alt-$semilla'
+	--PHP-alt-$semilla
+	Content-Type: text/plain; charset='iso-8859-1'
+	Content-Transfer-Encoding: 7bit
+	
+	Nuestro correo en versión de texto plano
+	
+	--PHP-alt-$semilla
+	Content-Type: text/html; charset='iso-8859-1'
+	Content-Transfer-Encoding: 7bit
+	
+	<h2>Contenido HTML!</h2>
+	<p>Aqui ponemos nuestra version <b>HTML</b> de nuestro correo.</p>
+	
+	--PHP-alt-$semilla--
+	
+	--PHP-mixed-$semilla
+	Content-Type: application/zip; name=adjunto.zip
+	Content-Transfer-Encoding: base64
+	Content-Disposition: attachment 
+	
+	$adjunto
+	--PHP-mixed-$semilla--";
+	echo @mail($para, $asunto, $correo, $headers);*/
 }
 ?>
