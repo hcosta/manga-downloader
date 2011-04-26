@@ -16,7 +16,7 @@ $obj->download('http://www.animextremist.com/mangas-online/mahou-sensei-negima/c
 $obj = new mangaDownloader_sm();
 $obj->download('http://submanga.com/Naruto/533');
 
-/* ESTE EJEMPLO DESCARGARA1 CAPITULOS ESPECIFICO DE NARUTO VIA ANIMEREADER */
+/* ESTE EJEMPLO DESCARGARA1 CAPITULOS ESPECIFICO DE NARUTO VIA MANGAREADER */
 
 $obj = new mangaDownloader_mr();
 $obj->download('http://www.mangareader.net/naruto/100'); 
