@@ -14,7 +14,7 @@ $obj->download('http://submanga.com/Naruto/533');
 /* ESTE EJEMPLO DESCARGARA1 CAPITULOS ESPECIFICO DE NARUTO VIA ANIMEREADER */
 
 $obj = new mangaDownloader_mr();
-$obj->download('http://www.mangareader.net/naruto/1'); 
+$obj->download('http://www.mangareader.net/naruto/100'); 
 
 /* ESTE EJEMPLO ENVIA UN EMAIL CON EL CAPI ADJUNTO Y EN ZIP A LOS MIEMBROS DE LA LISTA. **PARA MAS INFO MIRAR EL README */
 

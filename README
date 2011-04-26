@@ -1,7 +1,7 @@
 0.ULTIMOS CAMBIOS
 
 Ya no hay que CREAR EL DIRECTORIO 'mangas' en la raiz para que funcione.
-Soporte para Submanga y Animextremist... a disfrutar!
+Soporte para Submanga, Animextremist y Mangareader... a disfrutar, enjoy!
 Envio de capitulos por correo via script php :)
 
 1.REQUISITOS
@@ -9,16 +9,25 @@ Envio de capitulos por correo via script php :)
 Minimo: Servidor web compatible con PHP5 
 Recomendados: Servidor web Apache y PHP5 sobre GNU/LINUX o semejantes, con acceso a shell y programas compresores tar y gz.
 
-2.GUIA DE USO
+2.GUIA DE USO/USE GUIDE
 
-	ANIMEXTREMIST
+	MANGAREADER /English
+
+$obj = new mangaDownloader_ar();
+
+	//descarga un capitulo
+$obj->download('http://www.mangareader.net/hatsukoi-limited/1');
+	//o
+$obj->download('http://www.mangareader.net/202-13447-1/hatsukoi-limited/chapter-1.html')
+
+	ANIMEXTREMIST /Spanish
 
 $obj = new mangaDownloader_ax();
 
 	//descarga un capitulo
 $obj->download('http://www.animextremist.com/mangas-online/naruto/capitulo-504/naruto.html');
 
-	SUBMANGA
+	SUBMANGA /Spanish
 
 $obj = new mangaDownloader_sm();
 
@@ -37,7 +46,7 @@ Puedes configurar el demonio Cron para que ejecute el script:
 
 Para que funcione correctamente, es obligatorio crear un archivo con el nombre de la serie y el ultimo capitulo separados por un '-' guion, en el directorio donde tienes el script. Ejemplo: 
 
->touch Bleach-446
+>touch Bleach-446 //empty file indicates the last chapter you recived
 >touch Naruto-536
 
 Para usar el script:
@@ -48,14 +57,14 @@ $obj->send_email('http://submanga.com/One_Piece', $users); //url de la serie y s
 
 3.BUGS
 
-- Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes.
+Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes.
 
-- Fix para Submanga, si no descarga un capitulo por ejemplo http://submanga.com/Raruto/1 hay que pasarle la url real: http://submanga.com/Raruto/1/36316
+Fix para Submanga, si no descarga un capitulo por ejemplo http://submanga.com/Raruto/1 hay que pasarle la url real: http://submanga.com/Raruto/1/36316
 
 
 4.PROXIMAMENTE
 
-Soporte para MangaReader.
+Soporte para Mangastream.
 
 
 5. CONTACTO
