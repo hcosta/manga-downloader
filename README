@@ -1,18 +1,24 @@
-ULTIMOS CAMBIOS
+0.ULTIMOS CAMBIOS
 
 Ya no hay que CREAR EL DIRECTORIO 'mangas' en la raiz para que funcione.
 Soporte para Submanga y Animextremist... a disfrutar!
+Envio de capitulos por correo via script php :)
 
-GUIA DE USO
+1.REQUISITOS
 
-ANIMEXTREMIST
+Mínimo: Servidor web compatible con PHP5 
+Recomendados: Servidor web Apache y PHP5 sobre GNU/LINUX o semejantes, con acceso a shell y programas compresores tar y gz.
+
+2.GUIA DE USO
+
+	ANIMEXTREMIST
 
 $obj = new mangaDownloader_ax();
 
 	//descarga un capitulo
 $obj->download('http://www.animextremist.com/mangas-online/naruto/capitulo-504/naruto.html');
 
-SUBMANGA
+	SUBMANGA
 
 $obj = new mangaDownloader_sm();
 
@@ -21,12 +27,39 @@ $obj->last('http://submanga.com/Naruto');
  
 	//descarga un capitulo
 $obj->download('http://submanga.com/Naruto/2');
+	//o
+$obj->download('http://submanga.com/Naruto/2/70241')
 
-BUGS
+	SUBMANGA: ENVIAR ULTIMO CAPITULO PUBLICADO EN TAR.GZ POR CORREO 
 
-Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes.
+Puedes configurar el demonio Cron para que ejecute el script:
+>php script.php
+
+Para que funcione correctamente, es obligatorio crear un archivo con el nombre de la serie y el ultimo capitulo separados por un '-' guion, en el directorio donde tienes el script. Ejemplo: 
+
+>touch Bleach-446
+>touch Naruto-536
+
+Para usar el script:
+
+$users = 'example@example.com; example2@example.com'; //correo(s) a enviar el capitulo
+$obj = new mangaDownloader_sm();
+$obj->send_email('http://submanga.com/One_Piece', $users); //url de la serie y string con los correos
+
+3.BUGS
+
+- Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes.
+
+- Fix para Submanga, si no descarga un capitulo por ejemplo http://submanga.com/Raruto/1 hay que pasarle la url real: http://submanga.com/Raruto/1/36316
 
 
-PROXIMAMENTE
+4.PROXIMAMENTE
 
-Envio de correos con fichero adjunto... seeeeeeeeeee
+Soporte para MangaReader.
+
+
+5. CONTACTO
+
+Para mas informacion o consejos:
+
+hcostaguzman@gmail.com

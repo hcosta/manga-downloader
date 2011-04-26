@@ -67,35 +67,15 @@ class mangaDownloader_ax
 				if (saveImg($url, $i.".jpg", $serie."-".$capi) == 0) $error = 1;
 				set_time_limit(20);
 			}
-			
 		}
-	}
-	
-	/**
-	 * Envia un manga en compreso en Zip a la lista de usuarios proporcionada
-	 * @param String $file
-	 * @param Array String $list
-	 */
-	
-	function enviarManga($file, $list)
-	{
-		$file = "mangas/$file";
-		//comprimiremos la carpeta de un
-		
-		echo $file;
-		
-		//enviaremos la carpeta a los usuarios de la lista
-		
-		correo($file, $list);
-	}
-	
+	}	
 }
 
 class mangaDownloader_sm
 {	
 	/**
 	 * SUBMANGAVERSION
-	 * Le pasas una URL con la siguiente forma: http://submanga.com/Naruto/536/107463 es necesario el ultimo numero despues del capitulo 107463
+	 * Le pasas una URL con la siguiente forma: http://submanga.com/Naruto/536 es necesario el ultimo numero despues del capitulo 107463
 	 * La clase descarga el capitulo automaticamente en la carpeta mangas/Naruto536
 	 * @param string $manga_url
 	 */
@@ -159,7 +139,7 @@ class mangaDownloader_sm
 		for($i=1;$error == 0;$i++)
 		{
 			$url = urlParameters(0, $imageurl)."/".urlParameters(1, $imageurl)."/".urlParameters(2, $imageurl)."/".urlParameters(3, $imageurl)."/".urlParameters(4, $imageurl)."/".urlParameters(5, $imageurl)."/".$i.".jpg";
-			if (saveImg($url, $i.".jpg", $serie.$capi) == 0) $error = 1;
+			if (saveImg($url, $i.".jpg", $serie."-".$capi) == 0) $error = 1;
 			set_time_limit(20);
 		}
 	}
@@ -226,14 +206,73 @@ class mangaDownloader_sm
 		for($i=1;$error == 0;$i++)
 		{
 			$url = urlParameters(0, $imageurl)."/".urlParameters(1, $imageurl)."/".urlParameters(2, $imageurl)."/".urlParameters(3, $imageurl)."/".urlParameters(4, $imageurl)."/".urlParameters(5, $imageurl)."/".$i.".jpg";
-			if (saveImg($url, $i.".jpg", $serie.$capi) == 0) $error = 1;
+			if (saveImg($url, $i.".jpg", $serie."-".$capi) == 0) $error = 1;
 			set_time_limit(20);
 		}
 		
-		return $serie.$capi;
+		return $serie."-".$capi;
+	}
+
+	/**
+	 * Descarga el ultimo capitulo de una serie, lo comprime, lo envia por correo y borra los archivos
+	 * @param String $manga_url
+	 */
+	
+	function send_email($manga_url, $dest)
+	{
+		$count = 30;
+		$file = $this->last($manga_url);
+		$dir = "mangas/".$file;
+		if(file_exists($file))
+		{
+			echo "$file es viejo!";
+			while ($count > 0)
+			{
+				echo "<br>Intento: $count de 30 para finalizar";
+				$count--;
+				sleep(1800);
+				$file = $this->last($manga_url);
+				$dir = "mangas/".$file;
+				if(!file_exists($file))
+				{	
+					echo "$file es nuevo!";
+					system("cd mangas;tar -pczf ../".$file.".tar.gz ". $file);
+					echo "<br>cd mangas;tar -pczf ../".$file.".tar.gz ".$file;
+					correo($file.".tar.gz", $dest);
+					unlink($file.".tar.gz");
+					$chapter = explode("-",$file);
+					echo "<br>mv ".$chapter[0]."-".--$chapter[1]." ".$chapter[0]."-".++$chapter[1];
+					$chapter = explode("-",$file);
+					system("mv ".$chapter[0]."-".--$chapter[1]." ".$chapter[0]."-".++$chapter[1]);
+					@rrmdir($dir);
+					break;
+				}
+			}
+			if ($count == 0) 
+			{
+				echo '<br>'.$file.' ...enviando mail de disculpas y borrando directorio temportal';
+				@rrmdir($dir);
+				$chapter = explode("-",$file);
+				die(email_info($dest, ++$chapter[1]." de ".$chapter[0]));
+			}
+		}
+		else 
+		{	echo "$file es nuevo!";
+			system("cd mangas;tar -pczf ../".$file.".tar.gz ". $file);
+			echo "<br>cd mangas;tar -pczf ../".$file.".tar.gz ".$file;
+			correo($file.".tar.gz", $dest);
+			unlink($file.".tar.gz");
+			$chapter = explode("-",$file);
+			echo "<br>mv ".$chapter[0]."-".--$chapter[1]." ".$chapter[0]."-".++$chapter[1];
+			$chapter = explode("-",$file);
+			system("mv ".$chapter[0]."-".--$chapter[1]." ".$chapter[0]."-".++$chapter[1]);
+			@rrmdir($dir);
+		}
+		@rrmdir($dir);
 	}
 }
 
+/***** FUNCIONES VARIAS QUE USA LA CLASE ******/
 
 /**
  * Guarda una imagen. Le pasas url, nombre y directorio. Devuelve false si no lo consigue o true
@@ -245,11 +284,8 @@ class mangaDownloader_sm
 function saveImg($imageurl, $name, $loc)
 {	
 	if (!file_exists("mangas")) mkdir("mangas");
-	
 	if (!file_exists("mangas/$loc")) mkdir("mangas/$loc");
-		
 	$image = @file_get_contents($imageurl);
-	
 	if ($image)
 	{
 		if (!file_exists("mangas/$loc/$name"))
@@ -260,18 +296,18 @@ function saveImg($imageurl, $name, $loc)
 			    fwrite($fp, $image);
 			    fclose($fp);
 			}
-			echo $loc." ".$name." guardada!<br>";
+			echo "<br>".$loc." ".$name." guardada!";
 			return 1;
 		}
 		else 
 		{
-			echo $loc." ".$name." ya existe!<br>";
+			echo "<br>".$loc." ".$name." ya existe!";
 			return 0;
 		}
 	}
 	else 
 	{
-		echo $loc." ".$name." error!<br>";
+		echo "<br>".$loc." ".$name." error!";
 		return 0;
 	}
 }
@@ -290,6 +326,20 @@ function urlParameters($segment, $web)
 }
 
 /**
+ * Despues de 30 intentos envia un email informando que el capi no se ha publicado esta semana
+ * @param String $dest
+ * @param String $dir
+ */
+
+function email_info($dest, $dir)
+{
+	$subject = "El capitulo $dir no ha sido publicado. ";
+	$to = $dest;
+	$message = "Disculpe las molestias :(. \nNo conteste este email, ha sido enviado automaticamente";
+	if(@mail($to, $subject,$message, "From: mangaDownloader@robot.com")) echo '<br>mail de disculpas enviado';
+}
+
+/**
  * Envia un correo con archivo adjunto
  * @param String $file
  * @param String $user
@@ -297,38 +347,79 @@ function urlParameters($segment, $web)
 
 function correo($file, $user)
 {
-	/*
-	$semilla = md5(date('r', time()));
-	$para = $user;
-	$asunto = "Toma manga $file";
-	$headers = "From:robot-de-esos-que-mandan-cosas-lol@robot.com\r\nReply-To: robot-de-esos-que-mandan-cosas-lol@robot.com";
-	$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$semilla."\"";
-	$adjunto= chunk_split(base64_encode(file_get_contents($file)));
-	$correo = "
-	--PHP-mixed-$semilla;
-	Content-Type: multipart/alternative; boundary='PHP-alt-$semilla'
-	--PHP-alt-$semilla
-	Content-Type: text/plain; charset='iso-8859-1'
-	Content-Transfer-Encoding: 7bit
+	$email_from = "mangaDownloader@robot.com"; // Who the email is from 
+	$email_subject = "mangaDownloader! $file"; // The Subject of the email 
+	$email_message = "$file is on Fire :)"; // Message that the email has in it 
 	
-	Nuestro correo en version de texto plano
+	$email_to = $user; // Who the email is too 
 	
-	--PHP-alt-$semilla
-	Content-Type: text/html; charset='iso-8859-1'
-	Content-Transfer-Encoding: 7bit
+	$headers = "From: ".$email_from;
 	
-	<h2>Contenido HTML!</h2>
-	<p>Aqui ponemos nuestra version <b>HTML</b> de nuestro correo.</p>
+	$semi_rand = md5(time()); 
+	$mime_boundary = "==Multipart_Boundary_x{$semi_rand}x"; 
 	
-	--PHP-alt-$semilla--
+	$headers .= "\nMIME-Version: 1.0\n" . 
+	 "Content-Type: multipart/mixed;\n" . 
+	 " boundary=\"{$mime_boundary}\""; 
 	
-	--PHP-mixed-$semilla
-	Content-Type: application/zip; name=adjunto.zip
-	Content-Transfer-Encoding: base64
-	Content-Disposition: attachment 
+	$email_message .= "This is a multi-part message in MIME format.\n\n" . 
+	 "--{$mime_boundary}\n" . 
+	 "Content-Type:text/html; charset=\"iso-8859-1\"\n" . 
+	 "Content-Transfer-Encoding: 7bit\n\n" . 
+	$email_message . "\n\n"; 
 	
-	$adjunto
-	--PHP-mixed-$semilla--";
-	echo @mail($para, $asunto, $correo, $headers);*/
+	$fileatt = $file; // Path to the file 
+	$fileatt_type = "application/octet-stream"; // File Type 
+	$fileatt_name = $file; // Filename that will be used for the file as the attachment 
+	
+	$file = fopen($fileatt,'rb'); 
+	$data = fread($file,filesize($fileatt)); 
+	fclose($file); 
+	
+	$data = chunk_split(base64_encode($data)); 
+	
+	$email_message .= "--{$mime_boundary}\n" . 
+	 "Content-Type: {$fileatt_type};\n" . 
+	 " name=\"{$fileatt_name}\"\n" . 
+	 //"Content-Disposition: attachment;\n" . 
+	 //" filename=\"{$fileatt_name}\"\n" . 
+	 "Content-Transfer-Encoding: base64\n\n" . 
+	 $data . "\n\n" . 
+	 "--{$mime_boundary}\n"; 
+	unset($data);
+	unset($file);
+	unset($fileatt);
+	unset($fileatt_type);
+	unset($fileatt_name);
+	
+	$ok = @mail($email_to, $email_subject, $email_message, $headers); 
+	
+	if($ok) { 
+	echo "<br>Fichero enviado :)"; 
+	} else { 
+	die("<br>No se ha podido enviar!"); 
+	} 
+}
+
+/**
+ * Borra el contenido de un directorio de forma recursiva
+ * @param String $dir
+ */
+
+function rrmdir($dir) 
+{ 
+    if (is_dir($dir)) 
+    { 
+	      $objects = scandir($dir); 
+				foreach ($objects as $object) 
+				{ 
+			        if ($object != "." && $object != "..") 
+			        { 
+			          	if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object); else unlink($dir."/".$object); 
+			        } 
+				} 
+	      reset($objects); 
+	      rmdir($dir); 
+    } 
 }
 ?>
