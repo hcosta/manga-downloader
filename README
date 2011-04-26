@@ -6,7 +6,7 @@ Envio de capitulos por correo via script php :)
 
 1.REQUISITOS
 
-Mínimo: Servidor web compatible con PHP5 
+Minimo: Servidor web compatible con PHP5 
 Recomendados: Servidor web Apache y PHP5 sobre GNU/LINUX o semejantes, con acceso a shell y programas compresores tar y gz.
 
 2.GUIA DE USO
