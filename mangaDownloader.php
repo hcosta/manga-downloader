@@ -82,32 +82,37 @@ class mangaDownloader_sm
 	
 	function download($manga_url)
 	{
+		
+		
 		/* parametizamos la url y sacamos todos los datos necesarios */
-		
-    	$serie = urlParameters(3, $manga_url);
+		$id = urlParameters(5, $manga_url);
+		$serie = urlParameters(3, $manga_url);
     	$capi = urlParameters(4, $manga_url);
-		
-		/* HASTA AQUI SE CONSIGUE LA URL DEL ULTIMO CAPITULO: http://submanga.com/c/107463 */
-		$html = file_get_contents($manga_url);
-	    
-	    /* a new dom object*/
-	    $dom = new domDocument;
-	    /* load the html into the object*/
-	    @$dom->loadHTML($html);
-	
-	    /* discard white space*/
-	    $dom->preserveWhiteSpace = false;
-	    
-		/*Intentamos conseguir el id de la carpeta */
-	    $inputs = $dom->getElementsByTagName('input');
-		foreach($inputs as $element)
+    	
+		if ($id != ""){}
+		else 
 		{
-			if ($element->getAttribute('name') == "id")
-		   		$finalurl = $element->getAttribute('value');
+			/* HASTA AQUI SE CONSIGUE LA URL DEL ULTIMO CAPITULO: http://submanga.com/c/107463 */
+			$html = file_get_contents($manga_url);
+		    
+		    /* a new dom object*/
+		    $dom = new domDocument;
+		    /* load the html into the object*/
+		    @$dom->loadHTML($html);
+		
+		    /* discard white space*/
+		    $dom->preserveWhiteSpace = false;
+		    
+			/*Intentamos conseguir el id de la carpeta */
+		    $inputs = $dom->getElementsByTagName('input');
+			foreach($inputs as $element)
+			{
+				if ($element->getAttribute('name') == "id")
+			   		$id = $element->getAttribute('value');
+			}
 		}
-
 		/* HASTA AQUI SE CONSIGUE LA URL CON ID DEL CAPITULO: http://submanga.com/c/107463 */
-		$url_mod = "http://submanga.com/c/".$finalurl;
+		$url_mod = "http://submanga.com/c/".$id;
 		
 		$html = file_get_contents($url_mod);
 	    
