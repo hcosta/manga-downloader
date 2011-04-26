@@ -1,5 +1,89 @@
 <?php
 
+require_once 'includes/JSLikeHTMLElement.php';
+
+class mangaDownloader_ms
+{	
+    /**
+     * MANGASTREAM VERSION
+     * Eg. $obj->download('http://www.mangareader.net/202-13447-1/hatsukoi-limited/chapter-1.html');
+     * @param string $manga_url
+     */
+    
+    function download($manga_url)
+    {	
+    	if(urlParameters(6, $manga_url) == "end") die();
+    	
+    	$html = file_get_contents($manga_url);
+        $doc = new DOMDocument();
+		$doc->registerNodeClass('DOMElement', 'JSLikeHTMLElement');
+		@$doc->loadHTML($html);
+		$doc->preserveWhiteSpace = false;
+		
+		$i=0;
+		
+		/*BUSCAMOS EN EL DOCUMENTO EL NUMERO DE CAPITULO */
+		
+		$option = $doc->getElementsByTagName('option')->item($i);
+		$chapter = $option->nodeValue;
+		
+		/*RECORREMOS EL DOCUMENTO HASTA ENCONTRAR LO QUE SERIA UNA CAPA AJUSTADA */
+		
+		do 
+		{
+			$elem = $doc->getElementsByTagName('div')->item($i);
+			$str = $elem->getAttribute('style');
+			if(strstr($str , "position:relative")) break;
+			$i++;
+		}
+		while ($i<20);
+		$ireal = $i;
+		
+		/*CUANDO LO TENEMOS PODEMOS CREAR UN ARREGLO CON TODOS LOS DATOS QUE NECESITAREMOS */
+		
+		$elem = $doc->getElementsByTagName('div')->item($i);
+		$data[$i]['style'] = $elem->getAttribute('style');
+		do 
+		{
+			$i++;
+			$elem = $doc->getElementsByTagName('div')->item($i);
+			if ($elem->getAttribute('style') == "") break;
+			$a = $elem->getElementsByTagName('a');
+			$img = $elem->getElementsByTagName('img');
+			
+			$data[$i]['img'] = $img->item(0)->getAttribute('src');
+			$data[$i]['style'] = $elem->getAttribute('style');
+			$data[$i]['a'] = $a->item(0)->getAttribute('href');
+		}
+		while ($elem->getAttribute('style') != "");
+		
+		$imax = $i;
+		$i=$ireal;
+		
+		/* En este punto solo tenemos los estilos de las capas que forman la imagen, la url de la siguiente pagina y el link a la imagen :-(
+		 * Filtraremos los style para conseguir width, height y las posiciones exactas top y left de cada imagen, la primera solo sirve de marco */
+		$data[$i]['width'] = filtro("width", "px" , $data[$i]['style']);
+		$data[$i]['height'] = filtro("height", "px" , $data[$i]['style']); 
+		
+		for($i++;$i<$imax;$i++)
+		{
+			$data[$i]['width'] = filtro("width", "px" , $data[$i]['style']);
+			$data[$i]['height'] = filtro("height", "px" , $data[$i]['style']); 
+			$data[$i]['top'] = filtro("top", "px" , $data[$i]['style']);
+			$data[$i]['left'] = filtro("left", "px" , $data[$i]['style']); 
+		}
+		if(urlParameters(6, $manga_url) != "end")
+		{
+    		//echo "<br>FILE_NAME 6: ".urlParameters(6, $manga_url)." <br>URLPARAMETERS DIR 4: ".urlParameters(4, $manga_url);
+			$file = combine_data($data, $ireal ,$imax, urlParameters(4, $manga_url)."-".$chapter, urlParameters(6, $manga_url));
+			//echo "<br>http://mangastream.com".$data[$ireal+1]['a'];
+			set_time_limit(20);
+			$this->download("http://mangastream.com".$data[$ireal+1]['a']);
+		}
+		else die();
+    }
+}
+
 class mangaDownloader_mr
 {	
     /**
@@ -455,6 +539,23 @@ function correo($file, $user)
 }
 
 /**
+ * Devuelve el valor de un parametro de una cadena, especificando delimitador de unidad
+ * Es decir: dada la $string = "width: 120px" ; filtro("width", "px" , $string) retorna 120 :-)
+ * @param String $param
+ * @param String $unit
+ * @param String $text
+ */
+
+function filtro($param, $unit ,$text)
+{
+	$text = substr($text, strpos($text, $param)+strlen($param)+1, strlen($text)+1);
+	$text = substr($text, 0, strpos($text, $unit));
+	if ($text === '0') return "0";
+	else return $text;
+}
+
+
+/**
  * Borra el contenido de un directorio de forma recursiva
  * @param String $dir
  */
@@ -474,5 +575,91 @@ function rrmdir($dir)
         reset($objects); 
         rmdir($dir); 
 	} 
+}
+
+function combine_data($data, $ireal, $max, $dir, $file_name)
+{
+	if($max-1 == $ireal+1)
+	{
+		//solo hay una imagen
+		$i = $ireal+1;
+		$src[0] = $data[$i]['img'];
+		$imgBuf = array (); 
+		foreach ($src as $link) 
+		{ 
+		   switch(substr ($link,strrpos ($link,".")+1)) 
+		   { 
+		       case 'png': 
+		           $iTmp = imagecreatefrompng($link); 
+		           break; 
+		       case 'gif': 
+		           $iTmp = imagecreatefromgif($link); 
+		           break;                
+		       case 'jpeg':            
+		       case 'jpg': 
+		           $iTmp = imagecreatefromjpeg($link); 
+		           break;                
+		   } 
+		   array_push ($imgBuf,$iTmp); 
+		} 
+		
+		$iOut = imagecreatetruecolor ($data[$i]['width'],$data[$i]['height']);
+		imagecopy ($iOut,$imgBuf[0],$data[$i]['left'],$data[$i]['top'],0,0,$data[$i]['width'],$data[$i]['height']);
+		imagedestroy ($imgBuf[0]); 
+		
+		if (!file_exists("mangas")) mkdir("mangas");
+	    if (!file_exists("mangas/$dir")) mkdir("mangas/$dir");
+        if (!file_exists("mangas/$dir"."-".$file_name."/".$file_name.".png"))
+        {
+            imagepng($iOut, "mangas/$dir/".$file_name.".png");
+            echo "<br>".$file_name.".png guardada!";
+        }
+        else  echo "<br>".$file_name.".png ya existe!";
+	}
+	else
+	{
+		$j=0;
+		for($i=$ireal+1;$i<($max);$i++)
+		{
+			$src[$j] = $data[$i]['img'];
+			$j++;
+		}
+		$imgBuf = array (); 
+		foreach ($src as $link) 
+		{ 
+		   switch(substr ($link,strrpos ($link,".")+1)) 
+		   { 
+		       case 'png': 
+		           $iTmp = imagecreatefrompng($link); 
+		           break; 
+		       case 'gif': 
+		           $iTmp = imagecreatefromgif($link); 
+		           break;                
+		       case 'jpeg':            
+		       case 'jpg': 
+		           $iTmp = imagecreatefromjpeg($link); 
+		           break;                
+		   } 
+		   array_push ($imgBuf,$iTmp); 
+		} 
+		
+		$iOut = imagecreatetruecolor ($data[$ireal]['width'],$data[$ireal]['height']);
+		$j=0;
+		for($i=$ireal+1;$i<($max);$i++) 
+		{
+			imagecopy ($iOut,$imgBuf[$j],$data[$i]['left'],$data[$i]['top'],0,0,$data[$i]['width'],$data[$i]['height']);
+			imagedestroy ($imgBuf[$j]); 
+			$j++;
+		} 
+	
+		if (!file_exists("mangas")) mkdir("mangas");
+	    if (!file_exists("mangas/$dir")) mkdir("mangas/$dir");
+        if (!file_exists("mangas/$dir"."-".$file_name."/".$file_name.".png"))
+        {
+            imagepng($iOut, "mangas/$dir/".$file_name.".png");
+            echo "<br>".$file_name.".png guardada!";
+        }
+        else  echo "<br>".$file_name.".png ya existe!";
+	}
 }
 ?>

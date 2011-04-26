@@ -1,52 +1,54 @@
-0.ULTIMOS CAMBIOS
+1. MANGA DOWNLOADER PHP CLASS VERSION 1.0
 
-Ya no hay que CREAR EL DIRECTORIO 'mangas' en la raiz para que funcione.
-Soporte para Submanga, Animextremist y Mangareader... a disfrutar, enjoy!
-Envio de capitulos por correo via script php :)
+Support for: 
 
-1.REQUISITOS
+http://www.mangastream.com
+http://www.mangareader.net
+http://www.animextremist.com
+http://www.submanga.com
 
-Minimo: Servidor web compatible con PHP5 
-Recomendados: Servidor web Apache y PHP5 sobre GNU/LINUX o semejantes, con acceso a shell y programas compresores tar y gz.
+Use your own ideas and try different loops to download more chapters at once. Have fun and enjoy :--)
 
 2.GUIA DE USO/USE GUIDE
 
-	MANGAREADER /English
+When you download a file its saved on the auto-created 'mangas' directory.
+
+MANGASTREAM { English }
+
+$obj = new mangaDownloader_ms();
+//one way
+$obj->download('http://www.mangareader.net/hatsukoi-limited/1');
+
+MANGAREADER { English }
 
 $obj = new mangaDownloader_ar();
-
-	//descarga un capitulo
+//two ways
 $obj->download('http://www.mangareader.net/hatsukoi-limited/1');
-	//o
 $obj->download('http://www.mangareader.net/202-13447-1/hatsukoi-limited/chapter-1.html')
 
-	ANIMEXTREMIST /Spanish
-
+ANIMEXTREMIST { Spanish }
+//una forma
 $obj = new mangaDownloader_ax();
-
-	//descarga un capitulo
 $obj->download('http://www.animextremist.com/mangas-online/naruto/capitulo-504/naruto.html');
 
-	SUBMANGA /Spanish
-
+SUBMANGA { Spanish }
+//dos formas
 $obj = new mangaDownloader_sm();
 
-	//descarga el ultimo capitulo publicado
-$obj->last('http://submanga.com/Naruto');
- 
-	//descarga un capitulo
 $obj->download('http://submanga.com/Naruto/2');
-	//o
 $obj->download('http://submanga.com/Naruto/2/70241')
 
-	SUBMANGA: ENVIAR ULTIMO CAPITULO PUBLICADO EN TAR.GZ POR CORREO 
+//tambien puedes descargar el ultimo capitulo de una serie automaticamente
+$obj->last('http://submanga.com/Naruto');
 
-Puedes configurar el demonio Cron para que ejecute el script:
->php script.php
+OTROS
+
+Puedes configurar el demonio Cron para que ejecute un script:
+Ej: >php script.php
 
 Para que funcione correctamente, es obligatorio crear un archivo con el nombre de la serie y el ultimo capitulo separados por un '-' guion, en el directorio donde tienes el script. Ejemplo: 
 
->touch Bleach-446 //empty file indicates the last chapter you recived
+>touch Bleach-446 //el archivo vacio indica que ya teniamos ese capitulo anteriormente, se actualiza cuando se descarga un capitulo nuevo
 >touch Naruto-536
 
 Para usar el script:
@@ -55,19 +57,11 @@ $users = 'example@example.com; example2@example.com'; //correo(s) a enviar el ca
 $obj = new mangaDownloader_sm();
 $obj->send_email('http://submanga.com/One_Piece', $users); //url de la serie y string con los correos
 
-3.BUGS
+3. AGRADECIMIENTOS
 
-Se ha arreglado un problema con Animextresmist que alternaba diferentes host para las imagenes.
+Gracias a Keyvan Minoukadeh por la libreria Readability http://code.fivefilters.org/p/php-readability/
 
-Fix para Submanga, si no descarga un capitulo por ejemplo http://submanga.com/Raruto/1 hay que pasarle la url real: http://submanga.com/Raruto/1/36316
-
-
-4.PROXIMAMENTE
-
-Soporte para Mangastream.
-
-
-5. CONTACTO
+4. CONTACTO
 
 Para mas informacion o consejos:
 
