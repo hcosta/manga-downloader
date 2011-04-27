@@ -43,19 +43,7 @@ $obj->last('http://submanga.com/Naruto');
 
 OTROS
 
-Puedes configurar el demonio Cron para que ejecute un script:
-Ej: >php script.php
-
-Para que funcione correctamente, es obligatorio crear un archivo con el nombre de la serie y el ultimo capitulo separados por un '-' guion, en el directorio donde tienes el script. Ejemplo: 
-
->touch Bleach-446 //el archivo vacio indica que ya teniamos ese capitulo anteriormente, se actualiza cuando se descarga un capitulo nuevo
->touch Naruto-536
-
-Para usar el script:
-
-$users = 'example@example.com; example2@example.com'; //correo(s) a enviar el capitulo
-$obj = new mangaDownloader_sm();
-$obj->send_email('http://submanga.com/One_Piece', $users); //url de la serie y string con los correos
+Puedes configurar el demonio Cron para que ejecute un script. Mas indo en la Wiki del proyecto: https://github.com/hcosta/mangaDownloader/wiki
 
 3. AGRADECIMIENTOS
 
