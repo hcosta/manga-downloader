@@ -6,7 +6,7 @@ class mangaDownloader_ms
 {	
     /**
      * MANGASTREAM VERSION
-     * Eg. $obj->download('http://www.mangareader.net/202-13447-1/hatsukoi-limited/chapter-1.html');
+     * Eg. $obj->download('http://mangastream.com/read/one_piece_green/59213718/1');
      * @param string $manga_url
      */
     

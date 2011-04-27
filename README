@@ -17,7 +17,7 @@ MANGASTREAM { English }
 
 $obj = new mangaDownloader_ms();
 //one way
-$obj->download('http://www.mangareader.net/hatsukoi-limited/1');
+$obj->download('http://mangastream.com/read/one_piece_green/59213718/1');
 
 MANGAREADER { English }
 
@@ -43,11 +43,13 @@ $obj->last('http://submanga.com/Naruto');
 
 OTROS
 
-Puedes configurar el demonio Cron para que ejecute un script. Mas indo en la Wiki del proyecto: https://github.com/hcosta/mangaDownloader/wiki
+Puedes configurar el demonio Cron para que ejecute un script. Mas info en la Wiki del proyecto: 
+https://github.com/hcosta/mangaDownloader/wiki
 
 3. AGRADECIMIENTOS
 
-Gracias a Keyvan Minoukadeh por la libreria Readability http://code.fivefilters.org/p/php-readability/
+Gracias a Keyvan Minoukadeh por la libreria Readability: 
+http://code.fivefilters.org/p/php-readability/
 
 4. CONTACTO
 
