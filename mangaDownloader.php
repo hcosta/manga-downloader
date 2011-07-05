@@ -262,7 +262,7 @@ class mangaDownloader_sm
         
         foreach ($links as $link)
         {
-        if ($i == 4) 
+        if ($i == 3)  //fixed tercera imagen
         {
             //guardamos el tercer enlace que es el de la imagen
             $imageurl = $link->getAttribute('src');
@@ -324,7 +324,7 @@ class mangaDownloader_sm
         $i = 0;
             foreach ($links as $link)
             {
-	            if ($i == 4) 
+	            if ($i == 3)  //fixed tercera imagen
 	            {
 	                //guardamos el tercer enlace que es el de la imagen
 	                $imageurl = $link->getAttribute('src');
